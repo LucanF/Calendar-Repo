@@ -1,71 +1,62 @@
+// src/app/app.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CalendarHeaderComponent } from './calendar-header/calendar-header.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarGridComponent } from './calendar-grid/calendar-grid.component';
+import { CalendarHeaderComponent } from './calendar-header/calendar-header.component';
 import { EventModalComponent } from './event-modal/event-modal.component';
+import { Event } from './event-modal/event.model';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
   standalone: true,
-  imports: [CommonModule, CalendarHeaderComponent, CalendarGridComponent, EventModalComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CalendarGridComponent,
+    CalendarHeaderComponent,
+    EventModalComponent
+  ],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   currentDate: Date = new Date();
-  selectedDay?: Date;
-  selectedEvent?: any;
-  events: { [key: string]: any[] } = {};
+  events: { [key: string]: Event[] } = {};
+  selectedEvent: Event | null = null;
 
-  onPreviousMonth(): void {
-    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1);
+  onAddEvent(day: Date) {
+    this.selectedEvent = { title: '', description: '', date: day };
   }
 
-  onNextMonth(): void {
-    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1);
+  onEditEvent(event: Event) {
+    this.selectedEvent = event;
   }
 
-  onAddEvent(day: Date): void {
-    console.log('onAddEvent called', day);
-    this.selectedDay = day;
+  onSaveEvent(event: Event) {
+    const dateKey = event.date.toDateString();
+    if (!this.events[dateKey]) {
+      this.events[dateKey] = [];
+    }
+    const eventIndex = this.events[dateKey].findIndex(e => e === this.selectedEvent);
+    if (eventIndex >= 0) {
+      this.events[dateKey][eventIndex] = event;
+    } else {
+      this.events[dateKey].push(event);
+    }
     this.selectedEvent = null;
   }
 
-  onEditEvent(eventData: any): void {
-    console.log('onEditEvent called with eventData:', eventData);
-    this.selectedDay = new Date(eventData.date);  // Ensure the date format is correct
-    this.selectedEvent = eventData;
-    console.log('Selected Event:', this.selectedEvent);
+  onCloseModal() {
+    this.selectedEvent = null;
   }
 
-  onSaveEvent(event: any): void {
-    const dateKey = this.selectedDay?.toDateString();
-    if (dateKey) {
-      if (!this.events[dateKey]) {
-        this.events[dateKey] = [];
-      }
-      // Check if we are editing an existing event
-      if (this.selectedEvent) {
-        const index = this.events[dateKey].indexOf(this.selectedEvent);
-        if (index !== -1) {
-          this.events[dateKey][index] = event;
-        } else {
-          this.events[dateKey].push(event);
-        }
-      } else {
-        this.events[dateKey].push(event);
-      }
-      this.selectedDay = undefined;
-      this.selectedEvent = undefined;
-    }
+  onPreviousMonth() {
+    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1);
   }
 
-  onCloseModal(): void {
-    this.selectedDay = undefined;
-    this.selectedEvent = undefined;
-  }
-
-  getEventsForDay(day: Date): any[] {
-    return this.events[day.toDateString()] || [];
+  onNextMonth() {
+    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1);
   }
 }

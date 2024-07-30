@@ -1,38 +1,31 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+// src/app/calendar-day/calendar-day.component.ts
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CalendarEventComponent } from '../calendar-event/calendar-event.component';
+import { Event } from '../event-modal/event.model';
 
 @Component({
   selector: 'app-calendar-day',
-  templateUrl: './calendar-day.component.html',
-  styleUrls: ['./calendar-day.component.scss'],
   standalone: true,
-  imports: [CommonModule, CalendarEventComponent]
+  imports: [CommonModule],
+  templateUrl: './calendar-day.component.html',
+  styleUrls: ['./calendar-day.component.scss']
 })
-export class CalendarDayComponent implements OnInit {
+export class CalendarDayComponent {
   @Input() day!: Date;
-  @Input() events: any[] = [];
+  @Input() events: Event[] = [];
   @Output() addEvent = new EventEmitter<Date>();
-  @Output() editEvent = new EventEmitter<any>();
+  @Output() editEvent = new EventEmitter<Event>();
 
-  ngOnInit(): void {}
-
-  onAddEvent(event: MouseEvent) {
-    event.stopPropagation();
-    console.log('onAddEvent called with day:', this.day);
+  onAddEvent() {
     this.addEvent.emit(this.day);
   }
 
-  onEditEvent(event: MouseEvent, eventData: any) {
-    event.stopPropagation();
-    console.log('onEditEvent called with eventData:', eventData);
-    this.editEvent.emit(eventData);
+  onEditEvent(event: Event) {
+    this.editEvent.emit(event);
   }
 
-  isToday(day: Date): boolean {
+  get isCurrentDay(): boolean {
     const today = new Date();
-    return day.getDate() === today.getDate() &&
-           day.getMonth() === today.getMonth() &&
-           day.getFullYear() === today.getFullYear();
+    return this.day.toDateString() === today.toDateString();
   }
 }

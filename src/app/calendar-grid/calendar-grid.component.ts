@@ -1,46 +1,60 @@
+// src/app/calendar-grid/calendar-grid.component.ts
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Event } from '../event-modal/event.model';
 import { CalendarDayComponent } from '../calendar-day/calendar-day.component';
 
 @Component({
   selector: 'app-calendar-grid',
-  templateUrl: './calendar-grid.component.html',
-  styleUrls: ['./calendar-grid.component.scss'],
   standalone: true,
-  imports: [CommonModule, CalendarDayComponent]
+  imports: [CommonModule, CalendarDayComponent],
+  templateUrl: './calendar-grid.component.html',
+  styleUrls: ['./calendar-grid.component.scss']
 })
 export class CalendarGridComponent implements OnChanges {
   @Input() currentDate!: Date;
-  @Input() events: { [key: string]: any[] } = {};
+  @Input() events: { [key: string]: Event[] } = {};
   @Output() addEvent = new EventEmitter<Date>();
+  @Output() editEvent = new EventEmitter<Event>();
+
   weeks: Date[][] = [];
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges) {
     if (changes['currentDate']) {
-      this.generateCalendar();
+      this.weeks = this.generateCalendar(this.currentDate);
     }
   }
 
-  generateCalendar(): void {
-    this.weeks = [];
-    const startOfMonth = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
-    let startDate = new Date(startOfMonth);
-    while (startDate.getDay() !== 0) {
-      startDate = new Date(startDate.getTime() - 24 * 60 * 60 * 1000);
+  generateCalendar(date: Date): Date[][] {
+    const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const startDate = new Date(startOfMonth);
+    startDate.setDate(startDate.getDate() - startDate.getDay());
+
+    const endDate = new Date(endOfMonth);
+    endDate.setDate(endDate.getDate() + (6 - endDate.getDay()));
+
+    const weeks: Date[][] = [];
+    let week: Date[] = [];
+    let currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+      week.push(new Date(currentDate));
+      if (week.length === 7) {
+        weeks.push(week);
+        week = [];
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    let currentDate = new Date(startDate);
-    for (let week = 0; week < 6; week++) {
-      const weekArray: Date[] = [];
-      for (let day = 0; day < 7; day++) {
-        weekArray.push(new Date(currentDate));
-        currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
-      }
-      this.weeks.push(weekArray);
-    }
+    return weeks;
   }
 
   onAddEvent(day: Date) {
     this.addEvent.emit(day);
+  }
+
+  onEditEvent(event: Event) {
+    this.editEvent.emit(event);
   }
 }

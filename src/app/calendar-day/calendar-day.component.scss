@@ -1,44 +1,16 @@
+/* src/app/calendar-day/calendar-day.component.scss */
 .calendar-day {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
+  position: relative;
+  padding: 5px;
+}
+
+.current-day {
+  border: 2px solid #2196f3;
+}
+
+.calendar-event {
+  background-color: #ffeb3b;
+  padding: 2px;
+  margin: 2px 0;
   cursor: pointer;
-
-  .day-header {
-    width: 100%;
-    padding: 5px;
-    background-color: #f1f1f1;
-    color: #333;
-    text-align: right;
-    font-weight: bold;
-    border-bottom: 1px solid #ddd;
-    border-radius: 4px 4px 0 0;
-    box-sizing: border-box;
-  }
-
-  .current-day .day-header {
-    background-color: green;
-    color: white;
-  }
-
-  .event-list {
-    flex-grow: 1;
-    padding: 5px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-
-    .calendar-event {
-      background-color: #ffeb3b;
-      padding: 2px 5px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
 }

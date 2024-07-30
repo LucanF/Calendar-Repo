@@ -1,18 +1,21 @@
+<!-- src/app/app.component.html -->
 <div class="app-container">
   <app-calendar-header
     [currentDate]="currentDate"
     (previousMonth)="onPreviousMonth()"
-    (nextMonth)="onNextMonth()"
-  ></app-calendar-header>
+    (nextMonth)="onNextMonth()">
+  </app-calendar-header>
+
   <app-calendar-grid
     [currentDate]="currentDate"
     [events]="events"
     (addEvent)="onAddEvent($event)"
-    (editEvent)="onEditEvent($event)"
-  ></app-calendar-grid>
-  <app-event-modal *ngIf="selectedDay || selectedEvent"
+    (editEvent)="onEditEvent($event)">
+  </app-calendar-grid>
+
+  <app-event-modal *ngIf="selectedEvent"
     [event]="selectedEvent"
     (saveEvent)="onSaveEvent($event)"
-    (closeModal)="onCloseModal()"
-  ></app-event-modal>
+    (closeModal)="onCloseModal()">
+  </app-event-modal>
 </div>

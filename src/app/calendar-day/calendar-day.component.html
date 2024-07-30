@@ -1,6 +1,9 @@
-<div class="calendar-day" [class.current-day]="isToday(day)" (click)="onAddEvent($event)">
-  <div class="day-header">{{ day.getDate() }}</div>
-  <div class="event-list">
-    <app-calendar-event *ngFor="let event of events" [event]="event" (click)="onEditEvent($event, event)"></app-calendar-event>
+<!-- src/app/calendar-day/calendar-day.component.html -->
+<div class="calendar-day" [class.current-day]="isCurrentDay">
+  <div class="calendar-day-header">
+    {{ day.getDate() }}
+  </div>
+  <div *ngFor="let event of events" class="calendar-event" (click)="onEditEvent(event)">
+    {{ event.title }}
   </div>
 </div>
